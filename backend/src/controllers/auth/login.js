@@ -1,6 +1,5 @@
 import loginService from '../../services/auth/login'
 import * as yup from 'yup'
-import ApiError from '../../exceptions/ApiError'
 import UserResponseDto from '../../dtos/UserResponseDto'
 
 const loginSchema = yup.object().shape({
@@ -18,8 +17,6 @@ const login = async (ctx) => {
     })
 
     const userData = await loginService(login, password)
-
-    console.log('userData', userData)
 
     ctx.cookies.set('refreshToken', userData.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,

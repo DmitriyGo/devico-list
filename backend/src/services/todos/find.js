@@ -1,10 +1,7 @@
 import { Todo } from '../../entities/todo.js'
 
-const find = async (page, pageSize, sorting, userId) => {
+const find = async (page, pageSize, skip, sorting, userId) => {
   try {
-    const skip = (page - 1) * pageSize
-    const limit = pageSize
-
     const sort = {}
 
     for (const s of sorting) {
@@ -19,8 +16,8 @@ const find = async (page, pageSize, sorting, userId) => {
 
     const items = await Todo.find({ user: userId })
       .sort(sort)
-      .skip(skip)
-      .limit(limit)
+      .skip(skip || (page - 1) * pageSize)
+      .limit(pageSize)
 
     const total = await Todo.countDocuments({ user: userId })
     const active = await Todo.countDocuments({ user: userId, completed: false })

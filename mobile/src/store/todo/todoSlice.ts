@@ -8,7 +8,7 @@ const initialState: TodoState = {
   active: 0,
   completed: 0,
   totalPages: 0,
-  currentPage: 0,
+  currentPage: 1,
   isOutdated: false,
   isLoading: false,
   error: null,
@@ -24,11 +24,9 @@ const todoSlice = createSlice({
     setError: (state, action: PayloadAction<Error | string>) => {
       state.error = action.payload
     },
-    setOutdated: (state, action: PayloadAction<boolean>) => {
-      state.isOutdated = action.payload
-    },
     setTodos: (state, action: PayloadAction<TodoState>) => {
-      return {...state, ...action.payload}
+      const items = [...state.items, ...action.payload.items]
+      return {...state, ...action.payload, items}
     },
     editTodo: (
       state,
@@ -46,6 +44,17 @@ const todoSlice = createSlice({
       state.completed = action.payload.completed
       state.total = action.payload.total
     },
+    addTodo: (state, action: PayloadAction<Todo>) => {
+      state.items.unshift(action.payload)
+    },
+    deleteTodo: (state, action: PayloadAction<string>) => {
+      state.items = state.items.filter(i => i._id !== action.payload)
+    },
+    setNextPage: state => {
+      if (state.currentPage < state.totalPages) {
+        state.currentPage = state.currentPage + 1
+      }
+    },
     resetState: () => {
       return initialState
     },
@@ -55,10 +64,12 @@ const todoSlice = createSlice({
 export const {
   setLoading,
   setError,
-  setOutdated,
   setTodos,
   resetState,
+  setNextPage,
+  addTodo,
   editTodo,
+  deleteTodo,
 } = todoSlice.actions
 
 export default todoSlice.reducer

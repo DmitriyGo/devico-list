@@ -1,5 +1,4 @@
 import findService from '../../services/todos/find'
-import validateAccessToken from '../../services/token/validateAccessToken'
 
 const find = async (ctx) => {
   try {
@@ -8,9 +7,11 @@ const find = async (ctx) => {
     const page = parseInt(ctx.request.body.page) || 1
     const pageSize = parseInt(ctx.request.body.pageSize) || 10
 
+    const skip = parseInt(ctx.request.body.skip) || null
+
     const sorting = ctx.request.body.sorting || []
 
-    ctx.body = await findService(page, pageSize, sorting, userId)
+    ctx.body = await findService(page, pageSize, skip, sorting, userId)
   } catch (error) {
     ctx.throw(error)
   }

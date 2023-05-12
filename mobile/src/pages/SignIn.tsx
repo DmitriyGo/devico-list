@@ -1,14 +1,21 @@
 import {yupResolver} from '@hookform/resolvers/yup'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
-
-import * as yup from 'yup'
+import {useEffect} from 'react'
 import {useForm, Controller} from 'react-hook-form'
-import {View, Text, TextInput, TouchableOpacity, StyleSheet} from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native'
+import * as yup from 'yup'
 
-import {RootStackParamList} from '../../App'
-import {ILoginDTO} from '../store/auth/types'
-import {useAppDispatch} from '../store/hooks'
+import {RootStackParamList} from '../Router'
 import {login} from '../store/auth'
+import {ILoginDTO} from '../store/auth/types'
+import {useAppDispatch, useAppSelector} from '../store/hooks'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>
 
@@ -22,17 +29,33 @@ const schema = yup.object().shape({
 
 const SignIn = ({navigation}: Props) => {
   const dispatch = useAppDispatch()
+  const {user, error} = useAppSelector(state => state.auth)
 
   const {
     control,
     handleSubmit,
+    setValue,
     formState: {errors},
   } = useForm<ILoginDTO>({
     resolver: yupResolver(schema),
   })
 
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Login Failed', 'Invalid login or password')
+    }
+  }, [error])
+
+  useEffect(() => {
+    if (user) {
+      navigation.navigate('Home')
+    }
+  }, [navigation, user])
+
   const handleSignIn = (data: ILoginDTO) => {
     dispatch(login(data))
+
+    setValue('password', '')
   }
 
   return (

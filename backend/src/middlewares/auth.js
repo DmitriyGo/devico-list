@@ -4,6 +4,7 @@ import ApiError from '../exceptions/ApiError'
 const authMiddleware = async (ctx, next) => {
   try {
     const authorizationHeader = ctx.headers.authorization
+
     if (!authorizationHeader) {
       throw ApiError.UnauthorizedError()
     }

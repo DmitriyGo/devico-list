@@ -9,6 +9,7 @@ import {authEndpoints, IAuthResponse, ILoginDTO, IRegisterDTO} from './types'
 import sockets from '../socket'
 
 import {httpClient} from './../../helpers'
+import {resetState} from '../todo'
 
 export function* registerSaga(
   action: PayloadAction<IRegisterDTO>,
@@ -67,6 +68,8 @@ export function* logoutSaga(): Generator<unknown, void, IAuthResponse> {
     sockets.emit('logout', user)
 
     yield put(setUser(null))
+    yield put(resetState())
+
     AsyncStorage.removeItem('authorized')
   } catch (error) {
     yield put(setError(error as Error))
@@ -78,8 +81,6 @@ export function* logoutSaga(): Generator<unknown, void, IAuthResponse> {
 export function* checkAuthSaga(): Generator<unknown, void, IAuthResponse> {
   try {
     const authorized = yield call(AsyncStorage.getItem, 'authorized')
-
-    console.log('authorized ==>', authorized)
 
     if (!authorized) {
       return

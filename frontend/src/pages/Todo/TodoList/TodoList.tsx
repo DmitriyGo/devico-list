@@ -128,7 +128,7 @@ const TodoList: FC = () => {
 
   // ==== MODAL METHODS ==== //
 
-  const handeModalRemove = (item: Todo) => {
+  const handleModalRemove = (item: Todo) => {
     setSelectedItem(null)
     dispatch(removeTodo(item._id))
   }
@@ -148,7 +148,7 @@ const TodoList: FC = () => {
         <TodoModal
           item={selectedItem}
           type={modalType}
-          onRemove={handeModalRemove}
+          onRemove={handleModalRemove}
           onEdit={handleModalEdit}
           onClose={() => setSelectedItem(null)}
         />

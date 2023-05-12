@@ -7,8 +7,7 @@ export const errorHandler = async (err, ctx) => {
       message: err.message,
       errors: err.errors,
     }
-    console.log(ctx.status)
-    console.log(ctx.body)
+
     return
   } else {
     ctx.status = 500

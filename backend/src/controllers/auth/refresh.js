@@ -5,8 +5,6 @@ const refresh = async (ctx) => {
   try {
     const refreshToken = ctx.cookies.get('refreshToken')
 
-    console.log('refreshToken ==>', refreshToken)
-
     if (!refreshToken) {
       ctx.status = 401
       return

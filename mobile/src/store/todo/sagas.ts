@@ -1,10 +1,10 @@
 import {PayloadAction} from '@reduxjs/toolkit'
-import {call, put, takeEvery, takeLatest} from 'redux-saga/effects'
+import {call, put, select, takeEvery, takeLatest} from 'redux-saga/effects'
 
 import {httpClient} from '../../helpers'
 
 import {TodoActionTypes} from './actions'
-import {setError, setLoading, setOutdated, setTodos} from './todoSlice'
+import {addTodo, deleteTodo, setError, setLoading, setTodos} from './todoSlice'
 import {
   CreateTodoResponse,
   DeleteTodoResponse,
@@ -23,16 +23,18 @@ export function* fetchTodosSaga(): Generator<
   try {
     yield put(setLoading(true))
 
+    const {items} = yield select(state => state.todo)
+
     const response: FetchTodoResponse = yield call(
       httpClient.post,
       todoEndpoints.getAllTodos(),
       {
-        page: 1,
+        skip: items.length,
+        sorting: [{field: 'createdAt', sort: 'desc'}],
       },
     )
 
     yield put(setTodos(response.data))
-    yield put(setOutdated(false))
   } catch (error) {
     yield put(setError(error as Error))
   } finally {
@@ -46,9 +48,13 @@ export function* addTodoSaga(
   try {
     yield put(setLoading(true))
 
-    yield call(httpClient.post, todoEndpoints.createTodo(), action.payload)
+    const response = yield call(
+      httpClient.post,
+      todoEndpoints.createTodo(),
+      action.payload,
+    )
 
-    yield call(fetchTodosSaga)
+    yield put(addTodo(response.data))
   } catch (error) {
     yield put(setError(error as Error))
   } finally {
@@ -75,7 +81,7 @@ export function* updateTodoSaga(
 }
 
 export function* removeTodoSaga(
-  action: PayloadAction<string | string[]>,
+  action: PayloadAction<string>,
 ): Generator<unknown, void, DeleteTodoResponse> {
   try {
     yield put(setLoading(true))
@@ -84,7 +90,7 @@ export function* removeTodoSaga(
       ids: action.payload,
     })
 
-    yield call(fetchTodosSaga)
+    yield put(deleteTodo(action.payload))
 
     // const count = Array.isArray(action.payload) ? action.payload.length : 1
     // const message =
@@ -103,8 +109,6 @@ export function* clearCompletedTodosSaga() {
     yield put(setLoading(true))
 
     yield call(httpClient.delete, todoEndpoints.clearCompleted())
-
-    yield call(fetchTodosSaga)
   } catch (error) {
     yield put(setError(error as Error))
   } finally {

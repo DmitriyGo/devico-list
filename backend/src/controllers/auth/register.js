@@ -28,12 +28,8 @@ const register = async (ctx) => {
 
     ctx.body = new UserResponseDto(userData)
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const validationErrors = error.errors.map((err) => err.replace(/"/g, ''))
-      ctx.throw(ApiError.ValidationError(validationErrors))
-    } else {
-      ctx.throw(error)
-    }
+    ctx.status = 400
+    ctx.body = error.message
   }
 }
 

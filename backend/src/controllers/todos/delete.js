@@ -17,8 +17,6 @@ const deleteTodo = async (ctx) => {
       ids.map((id) => Todo.findOneAndDelete({ _id: id, user: userId })),
     )
 
-    console.log(ids)
-
     ctx.emitSocket({ type: 'listUpdated' }, ctx.state.user)
 
     ctx.body = deletedTodos

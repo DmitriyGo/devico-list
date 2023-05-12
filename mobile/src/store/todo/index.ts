@@ -13,5 +13,4 @@ export {
   setTodos,
   editTodo,
   resetState,
-  setOutdated,
 } from './todoSlice'

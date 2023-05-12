@@ -1,44 +1,104 @@
+import {yupResolver} from '@hookform/resolvers/yup'
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import {useEffect} from 'react'
+import {useForm, Controller} from 'react-hook-form'
 import {View, Text, TextInput, TouchableOpacity, StyleSheet} from 'react-native'
+import * as yup from 'yup'
 
-import {RootStackParamList} from '../../App'
-import {useState} from 'react'
+import {RootStackParamList} from '../Router'
+import {register} from '../store/auth'
+import {useAppDispatch, useAppSelector} from '../store/hooks'
+import {IRegisterFormDTO} from '../store/auth/types'
 
-type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>
+type Props = NativeStackScreenProps<RootStackParamList, 'SignUp'>
 
-const SignIn = ({navigation}: Props) => {
-  const [login, setName] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+const schema = yup.object().shape({
+  login: yup.string().required('Login is required'),
+  password: yup
+    .string()
+    .min(6, 'Min length 6 characters')
+    .required('Password is required'),
+  confirm_password: yup
+    .string()
+    .oneOf([yup.ref('password')], 'Passwords must match')
+    .required('Confirm Password is required'),
+})
 
-  const handleSignUp = () => {
-    // Implement sign up logic here
+const SignUp = ({navigation}: Props) => {
+  const dispatch = useAppDispatch()
+  const {user} = useAppSelector(state => state.auth)
+
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm<IRegisterFormDTO>({
+    resolver: yupResolver(schema),
+  })
+
+  const handleSignUp = (data: IRegisterFormDTO) => {
+    dispatch(register(data))
   }
+
+  useEffect(() => {
+    if (user) {
+      navigation.navigate('Home')
+    }
+  }, [navigation, user])
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Login"
-        value={login}
-        onChangeText={setName}
+      <Controller
+        control={control}
+        name="login"
+        render={({field: {onChange, value}}) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Login"
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
+      {errors.login && (
+        <Text style={styles.errorText}>{errors.login.message}</Text>
+      )}
+      <Controller
+        control={control}
+        name="password"
+        render={({field: {onChange, value}}) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry={true}
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm password"
-        secureTextEntry={true}
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
+      {errors.password && (
+        <Text style={styles.errorText}>{errors.password.message}</Text>
+      )}
+      <Controller
+        control={control}
+        name="confirm_password"
+        render={({field: {onChange, value}}) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Confirm Password"
+            secureTextEntry={true}
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
       />
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+      {errors.confirm_password && (
+        <Text style={styles.errorText}>{errors.confirm_password.message}</Text>
+      )}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSubmit(handleSignUp)}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
@@ -48,7 +108,7 @@ const SignIn = ({navigation}: Props) => {
   )
 }
 
-export default SignIn
+export default SignUp
 
 const styles = StyleSheet.create({
   container: {
@@ -88,5 +148,10 @@ const styles = StyleSheet.create({
     color: '#1E90FF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    marginTop: -8,
+    marginBottom: 8,
   },
 })

@@ -33,9 +33,11 @@ export const setupHttpClient = (store: RootStore) => {
     (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
       const accessToken: AccessToken | undefined =
         store.getState().auth.accessToken
+
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`
       }
+
       return config
     },
   )
