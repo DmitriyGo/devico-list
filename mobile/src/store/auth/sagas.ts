@@ -26,6 +26,8 @@ export function* registerSaga(
     yield put(setUser(response.data.user))
     yield put(setAccessToken(response.data.accessToken))
 
+    sockets.emit('login', response.data.user)
+
     AsyncStorage.setItem('authorized', 'true')
   } catch (error) {
     yield put(setError(error as Error))
@@ -49,7 +51,7 @@ export function* loginSaga(
     yield put(setUser(response.data.user))
     yield put(setAccessToken(response.data.accessToken))
 
-    sockets.emit('auth', response.data.user)
+    sockets.emit('login', response.data.user)
 
     AsyncStorage.setItem('authorized', 'true')
   } catch (error) {
@@ -80,7 +82,7 @@ export function* logoutSaga(): Generator<unknown, void, IAuthResponse> {
 
 export function* checkAuthSaga(): Generator<unknown, void, IAuthResponse> {
   try {
-    const authorized = yield call(AsyncStorage.getItem, 'authorized')
+    const authorized = Boolean(yield call(AsyncStorage.getItem, 'authorized'))
 
     if (!authorized) {
       return

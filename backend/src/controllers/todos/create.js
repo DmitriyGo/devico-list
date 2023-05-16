@@ -12,6 +12,7 @@ const create = async (ctx) => {
     const createdTodo = await Todo.create(todoData)
 
     ctx.emitSocket({ type: 'listUpdated' }, ctx.state.user)
+    ctx.emitSocket({ type: 'addTodo', payload: createdTodo }, ctx.state.user)
 
     ctx.status = 201
     ctx.body = createdTodo

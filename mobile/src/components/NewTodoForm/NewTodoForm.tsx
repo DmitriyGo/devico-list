@@ -1,6 +1,7 @@
 import {useState} from 'react'
-import {View, TextInput, TouchableOpacity, StyleSheet} from 'react-native'
+import {View, TextInput, TouchableOpacity} from 'react-native'
 import Icon from 'react-native-vector-icons/Feather'
+import {styles} from './styles'
 
 interface INewTodoForm {
   onCreate: (name: string) => void
@@ -35,34 +36,5 @@ const NewTodoForm = ({onCreate}: INewTodoForm) => {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  newTodoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  newTodoInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    padding: 10,
-    marginRight: 10,
-    fontSize: 16,
-  },
-  newTodoButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 4,
-  },
-  newTodoButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-})
 
 export default NewTodoForm

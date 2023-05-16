@@ -5,7 +5,8 @@ const clearCompleted = async (ctx) => {
     const userId = ctx.state.user.id
     const todos = await Todo.deleteMany({ user: userId, completed: true })
 
-    ctx.emitSocket(userId, 'listUpdated')
+    ctx.emitSocket({ type: 'listUpdated' }, ctx.state.user)
+    ctx.emitSocket({ type: 'clearCompleted', payload: todos }, ctx.state.user)
 
     ctx.body = todos
   } catch (error) {

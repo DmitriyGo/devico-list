@@ -18,6 +18,10 @@ const deleteTodo = async (ctx) => {
     )
 
     ctx.emitSocket({ type: 'listUpdated' }, ctx.state.user)
+    ctx.emitSocket(
+      { type: 'removeTodo', payload: deletedTodos },
+      ctx.state.user,
+    )
 
     ctx.body = deletedTodos
   } catch (error) {

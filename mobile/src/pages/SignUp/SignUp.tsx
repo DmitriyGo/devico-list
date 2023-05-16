@@ -1,16 +1,19 @@
-import {yupResolver} from '@hookform/resolvers/yup'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useEffect} from 'react'
 import {useForm, Controller} from 'react-hook-form'
-import {View, Text, TextInput, TouchableOpacity, StyleSheet} from 'react-native'
+import {View, Text, TextInput, TouchableOpacity} from 'react-native'
 import * as yup from 'yup'
 
-import {RootStackParamList} from '../Router'
-import {register} from '../store/auth'
-import {useAppDispatch, useAppSelector} from '../store/hooks'
-import {IRegisterFormDTO} from '../store/auth/types'
+import {yupResolver} from '@hookform/resolvers/yup'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
-type Props = NativeStackScreenProps<RootStackParamList, 'SignUp'>
+import {register} from '../../store/auth'
+import {useAppDispatch, useAppSelector} from '../../store/hooks'
+import {IRegisterFormDTO} from '../../store/auth/types'
+import {RootStackParamList, StackRoute} from '../../helpers'
+
+import {styles} from './styles'
+
+type Props = NativeStackScreenProps<RootStackParamList, StackRoute.SIGN_UP>
 
 const schema = yup.object().shape({
   login: yup.string().required('Login is required'),
@@ -42,7 +45,7 @@ const SignUp = ({navigation}: Props) => {
 
   useEffect(() => {
     if (user) {
-      navigation.navigate('Home')
+      navigation.navigate(StackRoute.HOME)
     }
   }, [navigation, user])
 
@@ -101,7 +104,7 @@ const SignUp = ({navigation}: Props) => {
         onPress={handleSubmit(handleSignUp)}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+      <TouchableOpacity onPress={() => navigation.navigate(StackRoute.SIGN_IN)}>
         <Text style={styles.link}>Already have an account? Sign in</Text>
       </TouchableOpacity>
     </View>
@@ -109,49 +112,3 @@ const SignUp = ({navigation}: Props) => {
 }
 
 export default SignUp
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 32,
-  },
-  input: {
-    width: '80%',
-    height: 48,
-    borderWidth: 1,
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    marginBottom: 16,
-  },
-  button: {
-    width: '80%',
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#1E90FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  link: {
-    marginTop: 16,
-    color: '#1E90FF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  errorText: {
-    color: 'red',
-    marginTop: -8,
-    marginBottom: 8,
-  },
-})

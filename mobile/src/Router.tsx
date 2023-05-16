@@ -1,17 +1,10 @@
 import {NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
-import {Text} from 'react-native'
-import Home from './pages/Home'
-import SignIn from './pages/SignIn'
-import SignUp from './pages/SignUp'
 
+import {SignUp, SignIn} from './pages'
 import {useAppSelector} from './store/hooks'
-
-export type RootStackParamList = {
-  Home: undefined
-  SignIn: undefined
-  SignUp: undefined
-}
+import {Loader, MainTabs} from './components'
+import {RootStackParamList, StackRoute} from './helpers'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -19,30 +12,43 @@ const Router = () => {
   const {user, isLoading} = useAppSelector(state => state.auth)
 
   if (isLoading) {
-    return <Text>Loading</Text>
+    return <Loader />
   }
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        {user && (
+      {user ? (
+        <Stack.Navigator>
           <Stack.Screen
-            name="Home"
+            name={StackRoute.MAIN_TABS}
+            component={MainTabs}
             options={{headerShown: false}}
-            component={Home}
           />
-        )}
-        <Stack.Screen
-          name="SignIn"
-          options={{headerShown: false}}
-          component={SignIn}
-        />
-        <Stack.Screen
-          name="SignUp"
-          options={{headerShown: false}}
-          component={SignUp}
-        />
-      </Stack.Navigator>
+          <Stack.Screen
+            name={StackRoute.SIGN_IN}
+            component={SignIn}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name={StackRoute.SIGN_UP}
+            component={SignUp}
+            options={{headerShown: false}}
+          />
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen
+            name={StackRoute.SIGN_IN}
+            component={SignIn}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name={StackRoute.SIGN_UP}
+            component={SignUp}
+            options={{headerShown: false}}
+          />
+        </Stack.Navigator>
+      )}
     </NavigationContainer>
   )
 }

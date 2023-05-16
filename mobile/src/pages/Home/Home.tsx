@@ -1,29 +1,41 @@
 import React, {useEffect} from 'react'
-import {View, Text, FlatList, StyleSheet, TouchableOpacity} from 'react-native'
+import {View, Text, FlatList, TouchableOpacity} from 'react-native'
 import Icon from 'react-native-vector-icons/Feather'
-import {useAppDispatch, useAppSelector} from '../store/hooks'
-import {Todo, addTodo, fetchTodos, removeTodo, updateTodo} from '../store/todo'
-import {Button} from 'react-native'
-import {logout} from '../store/auth'
-import {setNextPage} from '../store/todo/todoSlice'
-import NewTodoForm from '../components/NewTodoForm'
 
-const Home = () => {
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
+
+import {useAppDispatch, useAppSelector} from '../../store/hooks'
+import {
+  Todo,
+  addTodoAction,
+  fetchTodosAction,
+  removeTodoAction,
+  updateTodoAction,
+} from '../../store/todo'
+import {setNextPage} from '../../store/todo/todoSlice'
+import NewTodoForm from '../../components/NewTodoForm/NewTodoForm'
+import {RootStackParamList, StackRoute} from '../../helpers'
+
+import {styles} from './styles'
+
+type Props = NativeStackScreenProps<RootStackParamList, StackRoute.HOME>
+
+const Home = ({}: Props) => {
   const dispatch = useAppDispatch()
   const {items, total, isLoading, currentPage} = useAppSelector(
     state => state.todo,
   )
 
   useEffect(() => {
-    dispatch(fetchTodos())
+    dispatch(fetchTodosAction())
   }, [currentPage])
 
   const handleStatusChange = (item: Todo): void => {
-    dispatch(updateTodo({...item, completed: !item.completed}))
+    dispatch(updateTodoAction({...item, completed: !item.completed}))
   }
 
   const handleDelete = (item: Todo): void => {
-    dispatch(removeTodo(item._id))
+    dispatch(removeTodoAction(item._id))
   }
 
   const handleEndReached = () => {
@@ -55,14 +67,13 @@ const Home = () => {
   }
 
   function handleCreate(name: string): void {
-    dispatch(addTodo(name))
+    dispatch(addTodoAction(name))
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Todo List</Text>
       <NewTodoForm onCreate={handleCreate} />
-      <Button title="logout" onPress={() => dispatch(logout())} />
       <FlatList
         data={items}
         renderItem={renderItem}
@@ -76,41 +87,5 @@ const Home = () => {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: '#fff',
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-  },
-  todo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  name: {
-    fontSize: 18,
-    color: '#fff',
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  loading: {
-    textAlign: 'center',
-    paddingVertical: 10,
-  },
-})
 
 export default Home

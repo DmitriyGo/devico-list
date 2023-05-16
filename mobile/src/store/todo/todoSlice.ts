@@ -45,10 +45,18 @@ const todoSlice = createSlice({
       state.total = action.payload.total
     },
     addTodo: (state, action: PayloadAction<Todo>) => {
-      state.items.unshift(action.payload)
+      if (!state.items.find(i => i._id === action.payload._id)) {
+        state.items.unshift(action.payload)
+      }
     },
-    deleteTodo: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter(i => i._id !== action.payload)
+    deleteTodo: (state, action: PayloadAction<Todo[]>) => {
+      const deletedTodoIds = action.payload.map(todo => todo._id)
+      state.items = state.items.filter(
+        todo => !deletedTodoIds.includes(todo._id),
+      )
+    },
+    clearCompleted: state => {
+      state.items = state.items.filter(i => !i.completed)
     },
     setNextPage: state => {
       if (state.currentPage < state.totalPages) {
@@ -70,6 +78,7 @@ export const {
   addTodo,
   editTodo,
   deleteTodo,
+  clearCompleted,
 } = todoSlice.actions
 
 export default todoSlice.reducer

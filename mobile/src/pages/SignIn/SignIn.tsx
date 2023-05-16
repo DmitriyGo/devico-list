@@ -1,23 +1,19 @@
-import {yupResolver} from '@hookform/resolvers/yup'
-import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {useEffect} from 'react'
 import {useForm, Controller} from 'react-hook-form'
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native'
+import {View, Text, TextInput, TouchableOpacity, Alert} from 'react-native'
 import * as yup from 'yup'
 
-import {RootStackParamList} from '../Router'
-import {login} from '../store/auth'
-import {ILoginDTO} from '../store/auth/types'
-import {useAppDispatch, useAppSelector} from '../store/hooks'
+import {yupResolver} from '@hookform/resolvers/yup'
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
 
-type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>
+import {login} from '../../store/auth'
+import {ILoginDTO} from '../../store/auth/types'
+import {useAppDispatch, useAppSelector} from '../../store/hooks'
+import {RootStackParamList, StackRoute} from '../../helpers'
+
+import {styles} from './styles'
+
+type Props = NativeStackScreenProps<RootStackParamList, StackRoute.SIGN_IN>
 
 const schema = yup.object().shape({
   login: yup.string().required('Login is required'),
@@ -48,7 +44,7 @@ const SignIn = ({navigation}: Props) => {
 
   useEffect(() => {
     if (user) {
-      navigation.navigate('Home')
+      navigation.navigate(StackRoute.HOME)
     }
   }, [navigation, user])
 
@@ -97,7 +93,7 @@ const SignIn = ({navigation}: Props) => {
         onPress={handleSubmit(handleSignIn)}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+      <TouchableOpacity onPress={() => navigation.navigate(StackRoute.SIGN_UP)}>
         <Text style={styles.link}>Don't have an account? Sign up</Text>
       </TouchableOpacity>
     </View>
@@ -105,49 +101,3 @@ const SignIn = ({navigation}: Props) => {
 }
 
 export default SignIn
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 32,
-  },
-  input: {
-    width: '80%',
-    height: 48,
-    borderWidth: 1,
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    marginBottom: 16,
-  },
-  button: {
-    width: '80%',
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#1E90FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  link: {
-    marginTop: 16,
-    color: '#1E90FF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  errorText: {
-    color: 'red',
-    marginTop: -8,
-    marginBottom: 8,
-  },
-})

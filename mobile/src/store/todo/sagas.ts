@@ -81,7 +81,7 @@ export function* updateTodoSaga(
 }
 
 export function* removeTodoSaga(
-  action: PayloadAction<string>,
+  action: PayloadAction<Todo>,
 ): Generator<unknown, void, DeleteTodoResponse> {
   try {
     yield put(setLoading(true))
